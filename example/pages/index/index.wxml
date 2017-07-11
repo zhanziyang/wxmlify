@@ -1,0 +1,4 @@
+<!--index.wxml-->
+<import src="../../wxmlify/wxmlify.wxml" />
+
+<template is="wxmlify" data="{{nodes}}"></template>
