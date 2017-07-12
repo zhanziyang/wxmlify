@@ -2,12 +2,11 @@
 //获取应用实例
 var app = getApp()
 var Wxmlify = require('../../wxmlify/wxmlify')
-var html = require('../../test-data')['example']
-
+var sample = require('../../sample')
 
 Page({
   onLoad() {
-    var wxmlify = new Wxmlify(html, this, {
+    var wxmlify = new Wxmlify(sample['example2'], this, {
       preserveStyles: 'all',
       dataKey: 'nodes',
       disableImagePreivew: false,

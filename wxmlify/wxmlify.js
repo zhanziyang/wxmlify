@@ -77,6 +77,10 @@ Wxmlify.prototype.getFullNodes = function () {
   return this.fullNodes
 }
 
+Wxmlify.prototype.getImages = function () {
+  return this.images
+}
+
 Wxmlify.prototype.getDescendants = function (element, descendants) {
   var children = element.children || []
   var elementStyle = this.getStyles(element)
@@ -156,7 +160,6 @@ Wxmlify.prototype.traverse = function () {
   this.fullNodes = this.fullNodes || []
   var _this = this
   var forEach = function (node) {
-    // console.log(node.type, node.tagName)
     if (node.tagName == 'img') {
       _this.images.push(node.attributes.src)
     }
