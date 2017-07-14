@@ -99,6 +99,24 @@ new Wxmlify(html, this, {
 #### wxmlify.getImages()
 - 返回数组，包含所有图片的url
 
+### 自定义样式
+```css
+.wxmlified-element {
+  /* 修改段落块的样式 */
+}
+
+.wxmlified-element.h1 {
+  /* 修改原<h1>标签块的样式，其它块级标签同理 */
+}
+
+.wxmlified-image {
+  /* 修改图片的样式 */
+}
+
+.wxmlified-text {
+  /* 修改文字节点的样式 */
+}
+```
 ---
 
-💗 This plugin is made possible thanks to an open source HTML-to-JSON parser [himalaya](https://github.com/andrejewski/himalaya) made by Chris Andrejewski.
+💗 This little tool is made possible thanks to an open source HTML-to-JSON parser **[himalaya](https://github.com/andrejewski/himalaya)** made by Chris Andrejewski.
