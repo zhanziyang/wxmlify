@@ -1,0 +1,50 @@
+{
+  "name": "wxmlify",
+  "version": "1.0.0",
+  "description": "一个轻量快速的插件，帮助你在微信小程序中显示富文本编辑器生成的HTML。",
+  "main": "wxmlify/wxmlify.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c --environment BUILD:production",
+    "dev": "rollup -c -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhanziyang/wxmlify.git"
+  },
+  "keywords": [
+    "wxml",
+    "wxmlify",
+    "weixin",
+    "weapp",
+    "wechat",
+    "parse",
+    "html",
+    "rich-text",
+    "parser"
+  ],
+  "author": "zhanziyang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zhanziyang/wxmlify/issues"
+  },
+  "homepage": "https://github.com/zhanziyang/wxmlify#readme",
+  "devDependencies": {
+    "babel-core": "^6.25.0",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-latest": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "rollup": "^0.45.2",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-json": "^2.3.0",
+    "rollup-plugin-multi-dest": "^1.0.2",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-uglify": "^2.0.1",
+    "rollup-watch": "^4.3.1"
+  },
+  "dependencies": {
+    "himalaya": "^0.2.10"
+  }
+}

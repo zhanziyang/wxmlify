@@ -1,0 +1,21 @@
+<template name="wxmlify" >
+  <block wx:for="{{nodes}}" wx:key="{{index}}">
+    <view wx:if="{{item.type == 'Element' && item.descendants && item.descendants.length}}" style="{{item.styleString}}" class="wxmlified-element {{item.tagName}}">
+      <template is="wxmlify-descendants" data="{{descendants: item.descendants}}"></template>
+    </view>
+    <template wx:else is="wxmlify-dinc" data="{{item}}"></template>
+  </block>
+</template>
+
+<template name="wxmlify-descendants">
+  <block wx:for="{{descendants}}" wx:key="{{index}}">
+    <template is="wxmlify-dinc" data="{{item}}"></template>
+  </block>
+</template>
+
+<template name="wxmlify-dinc">
+  <view wx:if="{{item.type == 'BIB'}}" class="wxmlified-element bib-force-break {{item.tagName}}-break"></view>
+  <text wx:elif="{{item.type == 'Text'}}" class="wxmlified-text" style="{{item.styleString}}">{{item.content}}</text>
+  <image wx:elif="{{item.tagName == 'img'}}" class="wxmlified-image" src="{{item.attributes.src}}" style="{{item.styleString}}" mode="widthFix" bindtap="__wxmlifyImageTapHandler" data-attributes="{{item.attributes}}"></image>
+  <view wx:else class="wxmlified-element {{item.tagName}}" style="{{item.styleString}}"></view>
+</template>

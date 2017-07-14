@@ -24,6 +24,36 @@ module.exports = {
     'blockquote'
   ],
 
+  INHERIT_STYLE: [
+    'borderCollapse',
+    'borderSpacing',
+    'captionSide',
+    'color',
+    'cursor',
+    'direction',
+    'elevation',
+    'empty-cells',
+    'fontFamily',
+    'fontSize',
+    'fontStyle',
+    'fontVariant',
+    'fontWeight',
+    'font',
+    'letterSpacing',
+    'lineHeight',
+    'listStyleImage',
+    'listStylePosition',
+    'listStyleType',
+    'listStyle',
+    'stress',
+    'textAlign',
+    'textIndent',
+    'textTrasform',
+    'visibility',
+    'whiteSpace',
+    'wordSpacing'
+  ],
+
   decodeHTMLEntities(text) {
     var entities = {
       'amp': '&',
@@ -72,6 +102,38 @@ module.exports = {
       }
     }
     return to;
+  },
+
+  omit(obj, keys) {
+    if (typeof obj !== 'object' || Object.prototype.toString.call(keys) !== '[object Array]') {
+      return obj
+    }
+
+    var newObj = {}
+
+    for (var prop in obj) {
+      if (obj.hasOwnProperty(prop) && keys.indexOf(prop) < 0) {
+        newObj[prop] = obj[prop]
+      }
+    }
+
+    return newObj
+  },
+
+  pick(obj, keys) {
+    if (typeof obj !== 'object' || Object.prototype.toString.call(keys) !== '[object Array]') {
+      return obj
+    }
+
+    var newObj = {}
+
+    for (var prop in obj) {
+      if (obj.hasOwnProperty(prop) && keys.indexOf(prop) >= 0) {
+        newObj[prop] = obj[prop]
+      }
+    }
+
+    return newObj
   },
 
   validateHtmlString(html) {
