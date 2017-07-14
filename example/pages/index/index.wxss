@@ -9,8 +9,6 @@ page {
 .wxmlified-element {
   margin-top: 13px;
   line-height: 56rpx;
-  color: #333333;
-  font-size: 36rpx;
 }
 
 .wxmlified-element.p {
