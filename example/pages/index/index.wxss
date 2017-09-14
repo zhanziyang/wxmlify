@@ -23,3 +23,12 @@ page {
   margin-left: auto;
   margin-right: auto;
 }
+
+.wxmlified-video {
+  width: 690rpx;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

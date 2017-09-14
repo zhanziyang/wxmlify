@@ -17,5 +17,6 @@
   <view wx:if="{{item.type == 'BIB'}}" class="wxmlified-element bib-force-break {{item.tagName}}-break"></view>
   <text wx:elif="{{item.type == 'Text'}}" class="wxmlified-text" style="{{item.styleString}}">{{item.content}}</text>
   <image wx:elif="{{item.tagName == 'img'}}" class="wxmlified-image" src="{{item.attributes.src}}" style="{{item.styleString}}" mode="widthFix" bindtap="__wxmlifyImageTapHandler" data-attributes="{{item.attributes}}"></image>
+  <video wx:elif="{{item.tagName == 'video'}}" class="wxmlified-video" src="{{item.attributes.src}}" poster="{{item.attributes.poster}}" autoplay="{{item.attributes.autoplay || false}}" loop="{{item.attributes.loop || false}}" muted="{{item.attributes.muted || false}}" style="{{item.styleString}}"></video>
   <view wx:else class="wxmlified-element {{item.tagName}}" style="{{item.styleString}}"></view>
 </template>
