@@ -3,7 +3,7 @@ var sample = require('../../sample')
 
 Page({
   onLoad() {
-    var wxmlify = new Wxmlify(sample.example1, this, {
+    var wxmlify = new Wxmlify(sample.test, this, {
       preserveStyles: ['fontSize', 'fontWeight', 'fontStyle', 'color', 'textDecoration', 'textAlign', 'backgroundColor', 'background'],
       dataKey: 'nodes',
       disableImagePreivew: false,

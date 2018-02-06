@@ -27,13 +27,13 @@ function Wxmlify(html, page, options) {
   this.init()
 }
 
-Wxmlify.prototype.init = function () {
+Wxmlify.prototype.init = function() {
   this.traverse()
   this.bindEvents()
   this.exec()
 }
 
-Wxmlify.prototype.exec = function () {
+Wxmlify.prototype.exec = function() {
   var wxmlified = []
   for (var i = 0, len = this.fullNodes.length; i < len; i++) {
     var node = this.fullNodes[i]
@@ -44,7 +44,7 @@ Wxmlify.prototype.exec = function () {
         node.descendants = descendants
       }
       wxmlified.push(node)
-    } else {
+    } else if (!(node.type == 'Text' && !node.content.trim())) {
       node.styles = this.getStyles(node)
       node.styleString = this.stringifyStyle(node.styles)
       wxmlified.push(node)
@@ -56,12 +56,12 @@ Wxmlify.prototype.exec = function () {
   this.page.setData(data)
 }
 
-Wxmlify.prototype.bindEvents = function () {
+Wxmlify.prototype.bindEvents = function() {
   var _this = this.page
   _this.__wxmlifyImageTapHandler = this.imageTapHandler.bind(this)
 }
 
-Wxmlify.prototype.imageTapHandler = function (event) {
+Wxmlify.prototype.imageTapHandler = function(event) {
   var attr = event.currentTarget.dataset.attributes || {}
   var _this = this.page
   if (!this.options.disableImagePreivew) {
@@ -73,19 +73,19 @@ Wxmlify.prototype.imageTapHandler = function (event) {
   this.options.onImageTap && this.options.onImageTap(event)
 }
 
-Wxmlify.prototype.getFullNodes = function () {
+Wxmlify.prototype.getFullNodes = function() {
   return this.fullNodes
 }
 
-Wxmlify.prototype.getHTML = function () {
+Wxmlify.prototype.getHTML = function() {
   return this.html
 }
 
-Wxmlify.prototype.getImages = function () {
+Wxmlify.prototype.getImages = function() {
   return this.images
 }
 
-Wxmlify.prototype.getDescendants = function (element, descendants) {
+Wxmlify.prototype.getDescendants = function(element, descendants) {
   var children = element.children || []
   var elementStyle = this.getStyles(element)
   element.styles = elementStyle
@@ -104,13 +104,13 @@ Wxmlify.prototype.getDescendants = function (element, descendants) {
           styleString: ''
         })
       }
-    } else {
+    } else if (!(child.type == 'Text' && !child.content.trim())) {
       descendants.push(child)
     }
   }
 }
 
-Wxmlify.prototype.getStyles = function (element) {
+Wxmlify.prototype.getStyles = function(element) {
   var original = u.copy(element.styles) || {}
   this.addTagStyles(original, element.tagName)
   var preserveStyles = this.options.preserveStyles || []
@@ -128,7 +128,7 @@ Wxmlify.prototype.getStyles = function (element) {
   return original
 }
 
-Wxmlify.prototype.addTagStyles = function (original, tagName) {
+Wxmlify.prototype.addTagStyles = function(original, tagName) {
   if (tagName == 'b' || tagName == 'strong') {
     original['fontWeight'] = 'bold'
   }
@@ -146,24 +146,24 @@ Wxmlify.prototype.addTagStyles = function (original, tagName) {
   }
 }
 
-Wxmlify.prototype.stringifyStyle = function (style) {
+Wxmlify.prototype.stringifyStyle = function(style) {
   var str = ''
   for (var prop in style) {
     if (style.hasOwnProperty(prop)) {
-      var propName = prop.replace(/[A-Z]/, function (match) {
+      var propName = prop.replace(/[A-Z]/, function(match) {
         return '-' + match.toLowerCase()
       })
       var value = style[prop]
-      str += (propName + ': ' + value + '; ')
+      str += propName + ': ' + value + '; '
     }
   }
   return str
 }
 
-Wxmlify.prototype.traverse = function () {
+Wxmlify.prototype.traverse = function() {
   this.fullNodes = this.fullNodes || []
   var _this = this
-  var forEach = function (node) {
+  var forEach = function(node) {
     if (node.tagName == 'img') {
       _this.images.push(node.attributes.src)
     }
@@ -175,14 +175,14 @@ Wxmlify.prototype.traverse = function () {
   for (var i = 0, len = this.fullNodes.length; i < len; i++) {
     var node = this.fullNodes[i]
     forEach(node)
-      ; (function recursion(parent) {
-        var children = parent.children || []
-        for (var j = 0, len = children.length; j < len; j++) {
-          var child = children[j]
-          forEach(child)
-          recursion(child)
-        }
-      }(node))
+    ;(function recursion(parent) {
+      var children = parent.children || []
+      for (var j = 0, len = children.length; j < len; j++) {
+        var child = children[j]
+        forEach(child)
+        recursion(child)
+      }
+    })(node)
   }
 }
 
