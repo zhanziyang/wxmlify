@@ -1,8 +1,9 @@
 <template name="wxmlify" >
   <block wx:for="{{nodes}}" wx:key="{{index}}">
-    <view wx:if="{{item.type == 'Element' && item.descendants && item.descendants.length}}" style="{{item.styleString}}" class="wxmlified-element {{item.tagName}}">
+    <view wx:if="{{item.type == 'Element' && !item.table && item.descendants && item.descendants.length}}" style="{{item.styleString}}" class="wxmlified-element {{item.tagName}}">
       <template is="wxmlify-descendants" data="{{descendants: item.descendants}}"></template>
     </view>
+    <template wx:elif="{{item.table}}" is="wxmlify-table" data="{{item}}"></template>
     <template wx:else is="wxmlify-dinc" data="{{item}}"></template>
   </block>
 </template>
@@ -14,9 +15,21 @@
 </template>
 
 <template name="wxmlify-dinc">
-  <view wx:if="{{item.type == 'BIB'}}" class="wxmlified-element bib-force-break {{item.tagName}}-break"></view>
-  <text wx:elif="{{item.type == 'Text'}}" class="wxmlified-text" style="{{item.styleString}}">{{item.content}}</text>
+  <view wx:if="{{item.type == 'BIB'}}" class="wxmlified-{{table? 'table' : 'element'}} bib-force-break {{item.tagName}}-break"></view>
+  <text wx:elif="{{item.type == 'Text'}}" class="wxmlified-text {{item.parentTag}}" style="{{item.styleString}}">{{item.content}}</text>
   <image wx:elif="{{item.tagName == 'img'}}" class="wxmlified-image" src="{{item.attributes.src}}" style="{{item.styleString}}" mode="widthFix" bindtap="__wxmlifyImageTapHandler" data-attributes="{{item.attributes}}"></image>
   <video wx:elif="{{item.tagName == 'video'}}" class="wxmlified-video" src="{{item.attributes.src}}" poster="{{item.attributes.poster}}" autoplay="{{item.attributes.autoplay || false}}" loop="{{item.attributes.loop || false}}" muted="{{item.attributes.muted || false}}" style="{{item.styleString}}"></video>
-  <view wx:else class="wxmlified-element {{item.tagName}}" style="{{item.styleString}}"></view>
+  <view wx:else class="wxmlified-{{table? 'table' : 'element'}} {{item.tagName}}" style="{{item.styleString}}"></view>
+</template>
+
+<template name="wxmlify-table">
+  <view class="wxmlified-element wxmlified-table {{item.tagName}}">
+    <view class="wxmlified-element wxmlified-table {{row.tagName}}" wx:for="{{item.rows}}" wx:key="{{index}}" wx:for-item="row" wx:for-index="i" style="display: flex;">
+      <view class="wxmlified-element wxmlified-table {{cell.tagName}}" wx:for="{{row.cells}}" wx:key="{{i}}" wx:for-item="cell" style="flex: 1; text-align: center;">
+        <block wx:for="{{cell.descendants}}" wx:key="{{descIndex}}" wx:for-item="desc" wx:for-index="descIndex">
+          <template is="wxmlify-dinc" data="{{item: desc, table: true}}"></template>
+        </block>
+      </view>
+    </view>
+  </view>
 </template>

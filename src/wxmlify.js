@@ -27,21 +27,28 @@ function Wxmlify(html, page, options) {
   this.init()
 }
 
-Wxmlify.prototype.init = function() {
+Wxmlify.prototype.init = function () {
   this.traverse()
   this.bindEvents()
   this.exec()
 }
 
-Wxmlify.prototype.exec = function() {
+Wxmlify.prototype.exec = function () {
   var wxmlified = []
   for (var i = 0, len = this.fullNodes.length; i < len; i++) {
     var node = this.fullNodes[i]
     if (node.type == 'Element' && node.children.length) {
+      node.children.forEach(item => {
+        item.parentTag = node.tagName
+      })
       var descendants = []
-      this.getDescendants(node, descendants)
-      if (descendants.length) {
-        node.descendants = descendants
+      if (node.tagName === 'table') {
+        this.getTableDescendants(node, descendants)
+      } else {
+        this.getDescendants(node, descendants)
+        if (descendants.length) {
+          node.descendants = descendants
+        }
       }
       wxmlified.push(node)
     } else if (!(node.type == 'Text' && !node.content.trim())) {
@@ -56,12 +63,12 @@ Wxmlify.prototype.exec = function() {
   this.page.setData(data)
 }
 
-Wxmlify.prototype.bindEvents = function() {
+Wxmlify.prototype.bindEvents = function () {
   var _this = this.page
   _this.__wxmlifyImageTapHandler = this.imageTapHandler.bind(this)
 }
 
-Wxmlify.prototype.imageTapHandler = function(event) {
+Wxmlify.prototype.imageTapHandler = function (event) {
   var attr = event.currentTarget.dataset.attributes || {}
   var _this = this.page
   if (!this.options.disableImagePreivew) {
@@ -73,19 +80,19 @@ Wxmlify.prototype.imageTapHandler = function(event) {
   this.options.onImageTap && this.options.onImageTap(event)
 }
 
-Wxmlify.prototype.getFullNodes = function() {
+Wxmlify.prototype.getFullNodes = function () {
   return this.fullNodes
 }
 
-Wxmlify.prototype.getHTML = function() {
+Wxmlify.prototype.getHTML = function () {
   return this.html
 }
 
-Wxmlify.prototype.getImages = function() {
+Wxmlify.prototype.getImages = function () {
   return this.images
 }
 
-Wxmlify.prototype.getDescendants = function(element, descendants) {
+Wxmlify.prototype.getDescendants = function (element, descendants) {
   var children = element.children || []
   var elementStyle = this.getStyles(element)
   element.styles = elementStyle
@@ -95,14 +102,22 @@ Wxmlify.prototype.getDescendants = function(element, descendants) {
     child.styles = u.pick(elementStyle, u.INHERIT_STYLE)
     child.styleString = this.stringifyStyle(elementStyle)
     if (child.children && child.children.length) {
-      this.getDescendants(child, descendants)
-      if (u.BLOCK_ELEMENTS.indexOf(child.tagName) >= 0) {
-        descendants.push({
-          type: 'BIB', // block in block
-          tagName: child.tagName,
-          styles: {},
-          styleString: ''
-        })
+      child.children.forEach(item => {
+        item.parentTag = child.tagName
+      })
+      if (child.tagName === 'table') {
+        this.getTableDescendants(child, descendants)
+      } else {
+        this.getDescendants(child, descendants)
+        if (u.BLOCK_ELEMENTS.indexOf(child.tagName) >= 0) {
+          descendants.push({
+            type: 'BIB', // block in block
+            tagName: child.tagName,
+            styles: {},
+            styleString: '',
+            parentTag: element.tagName
+          })
+        }
       }
     } else if (!(child.type == 'Text' && !child.content.trim())) {
       descendants.push(child)
@@ -110,7 +125,46 @@ Wxmlify.prototype.getDescendants = function(element, descendants) {
   }
 }
 
-Wxmlify.prototype.getStyles = function(element) {
+Wxmlify.prototype.getTableDescendants = function (table, descendants) {
+  var elementStyle = this.getStyles(table)
+  table.styles = elementStyle
+  table.styleString = this.stringifyStyle(elementStyle)
+  table.table = true
+  var trs = []
+  this.findAllCertanTypeOfTagIn(table, trs, ['tr'])
+  trs.forEach(function (item) {
+    this.manageTableRow(item)
+  }.bind(this))
+  table.rows = trs
+}
+
+Wxmlify.prototype.findAllCertanTypeOfTagIn = function (root, arr, tagNames) {
+  if (!root.children) return
+  var children = root.children
+  var len = children.length
+  for (var i = 0; i < len; i++) {
+    var child = children[i]
+    if (child && tagNames.indexOf(child.tagName) >= 0) {
+      arr.push(child)
+    } else {
+      this.findAllCertanTypeOfTagIn(child, arr, tagNames)
+    }
+  }
+}
+
+Wxmlify.prototype.manageTableRow = function (tr) {
+  var cells = []
+  this.findAllCertanTypeOfTagIn(tr, cells, ['td', 'th'])
+  tr.cells = cells.map(function (item) {
+    var descendants = []
+    this.getDescendants(item, descendants)
+    item.descendants = descendants
+    return item
+  }.bind(this))
+  tr.isHead = cells[0] && cells[0].tagName === 'th'
+}
+
+Wxmlify.prototype.getStyles = function (element) {
   var original = u.copy(element.styles) || {}
   this.addTagStyles(original, element.tagName)
   var preserveStyles = this.options.preserveStyles || []
@@ -128,7 +182,7 @@ Wxmlify.prototype.getStyles = function(element) {
   return original
 }
 
-Wxmlify.prototype.addTagStyles = function(original, tagName) {
+Wxmlify.prototype.addTagStyles = function (original, tagName) {
   if (tagName == 'b' || tagName == 'strong') {
     original['fontWeight'] = 'bold'
   }
@@ -146,11 +200,11 @@ Wxmlify.prototype.addTagStyles = function(original, tagName) {
   }
 }
 
-Wxmlify.prototype.stringifyStyle = function(style) {
+Wxmlify.prototype.stringifyStyle = function (style) {
   var str = ''
   for (var prop in style) {
     if (style.hasOwnProperty(prop)) {
-      var propName = prop.replace(/[A-Z]/, function(match) {
+      var propName = prop.replace(/[A-Z]/, function (match) {
         return '-' + match.toLowerCase()
       })
       var value = style[prop]
@@ -160,10 +214,10 @@ Wxmlify.prototype.stringifyStyle = function(style) {
   return str
 }
 
-Wxmlify.prototype.traverse = function() {
+Wxmlify.prototype.traverse = function () {
   this.fullNodes = this.fullNodes || []
   var _this = this
-  var forEach = function(node) {
+  var forEach = function (node) {
     if (node.tagName == 'img') {
       _this.images.push(node.attributes.src)
     }
@@ -175,14 +229,14 @@ Wxmlify.prototype.traverse = function() {
   for (var i = 0, len = this.fullNodes.length; i < len; i++) {
     var node = this.fullNodes[i]
     forEach(node)
-    ;(function recursion(parent) {
-      var children = parent.children || []
-      for (var j = 0, len = children.length; j < len; j++) {
-        var child = children[j]
-        forEach(child)
-        recursion(child)
-      }
-    })(node)
+      ; (function recursion(parent) {
+        var children = parent.children || []
+        for (var j = 0, len = children.length; j < len; j++) {
+          var child = children[j]
+          forEach(child)
+          recursion(child)
+        }
+      })(node)
   }
 }
 
