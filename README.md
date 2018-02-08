@@ -120,6 +120,35 @@ new Wxmlify(html, this, {
 .wxmlified-text {
   /* 修改文字节点的样式 */
 }
+
+.wxmlified-table.table {
+  /* table 的样式 */
+  border: 1rpx solid #acacac;
+}
+
+.wxmlified-table.tr {
+  /* tr 的样式 */
+  border-bottom: 1rpx solid #acacac;
+}
+
+.wxmlified-table.tr:last-child {
+  border-bottom:0;
+}
+
+.wxmlified-table.th, .wxmlified-table.td {
+  /* th,td 的样式 */
+  border-right: 1rpx solid #acacac;
+  line-height: 2;
+}
+
+.wxmlified-table.th:last-child, .wxmlified-table.td:last-child {
+  border-right: none;
+}
+
+.wxmlified-table.th {
+  font-weight: bold;
+}
+
 ```
 ---
 
